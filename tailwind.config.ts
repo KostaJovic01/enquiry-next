@@ -8,9 +8,23 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-barlow)', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'],
+      },
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        additive: {
+          blue: {
+            DEFAULT: "#00172F",
+            light: "#002A4A",
+            dark: "#000F1D",
+          },
+          white: {
+            DEFAULT: "#FFFFFF",
+          },
+          gray: {
+            DEFAULT: "#F4F5F6",
+          }
+        }
       },
     },
   },
