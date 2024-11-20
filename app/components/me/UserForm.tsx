@@ -10,29 +10,53 @@ import {User} from "@/types/User";
 import {UserSchema, UserSchemaData} from "@/zod/UserSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {useTranslation} from "react-i18next";
+import Button from "../common/Button";
+import showDiscardChangesDialog from "../common/DiscardModal";
+import DiscardModal from "../common/DiscardModal";
 
 
 type Props = {
     user:User
 };
 const UserForm = (props: Props) => {
-    const [isModalOpen, setIsModalOpen] = useState(false)
     const [user] = useState<User>(props.user)
     const {t} = useTranslation(['me', 'common']);
     const {
         register,
         handleSubmit,
-        formState: { errors },
+        formState,
+        reset
     } = useForm<UserSchemaData>({
         resolver: zodResolver(UserSchema),
     });
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isConfirmationOpen, setIsConfirmationOpen] = useState(false)
+    const { isDirty, errors } = formState;
+    const closeModal = (close: boolean) => {
+        //TODO: implement a service which renders the confirmation modal use the createPortal method
+        if (isDirty) {setIsConfirmationOpen(true)}
+        else setIsModalOpen(close)
+    } 
+    const discard = () =>{
+        reset()
+        setIsConfirmationOpen(false)
+        setIsModalOpen(false)
+    }
+    const justClose = () =>{
+        setIsConfirmationOpen(false)
+        setIsModalOpen(false)
+    }
+
     return (
-        <div>
+        <div id="modal-root" >
             <RoundButton onClick={() => setIsModalOpen(true)}>
                 <PencilIcon width={"24"} height={"24"} />
             </RoundButton>
-            <Modal open={isModalOpen} setOpen={setIsModalOpen}>
-                <form className={"flex flex-col space-y-5"} onSubmit={handleSubmit((data)=>{console.table(data)}, (errors)=>{console.table(errors)})}>
+            <Modal open={isModalOpen} setOpen={closeModal}>
+                <form className={"flex flex-col space-y-5"} 
+                onSubmit={handleSubmit(
+                    (data)=>{console.table(data)}, 
+                    (errors)=>{console.table(errors)})}>
                     <span className={"text-xl"}>{`${user.givenName} ${user.familyName}`}</span>
                     <FormInput
                         type={"email"}
@@ -62,15 +86,11 @@ const UserForm = (props: Props) => {
                         register={register}
                     />
                     <div className="mt-5 flex flex-row justify-end">
-                        <button
-                            type="submit"
-                            className="w-mas inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                        >
-                            {t('common:save')}
-                        </button>
+                        <Button label={t('common:save')} type='submit' />
                     </div>
                 </form>
             </Modal>
+            <DiscardModal isOpen={isConfirmationOpen} setIsOpen={setIsConfirmationOpen} onDiscard={discard} onClose={justClose} />
         </div>
     );
 };

@@ -44,6 +44,11 @@ export default function MultiMedia() {
    * if the external app is running on the same domain then the external app can read the coockies without any problems and we can pass the auth tokens like this 
    * however if they run on different domains then we need to implement cross domain coockie tracking
    *  
+   * TODO: could we implement it in some other way 
+   * if we click on a button which is located somwhere in the host application just append the /mm route to it and render the Multi media component
+   * 
+   *  TODO: find a more elegant and stable solution instead of a iframe
+   * TODO: implemet the external app in such a way that i can define which route i want to be visible the favorite videos ore tutorial videos
    */
 
 

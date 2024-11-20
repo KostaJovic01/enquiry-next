@@ -8,18 +8,20 @@ type Props = {
     setOpen: (open: boolean) => void;
     children?: React.ReactNode;
     type?: "sm" | "md" | "lg";
+    z?: 'z-10'|'z-20'
+    id?: string
 };
 
 const Modal = (props: Props) => {
     const { open, setOpen } = props;
     return (
-        <Dialog open={open} onClose={setOpen} className="relative z-10">
+        <Dialog id={props.id?? 'modal'} open={open} onClose={setOpen} className={`relative ${props.z?? 'z-10'} `}>
             <DialogBackdrop
                 transition
                 className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
             />
 
-            <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div className={`${props.z?? 'z-10'} fixed inset-0 w-screen overflow-y-auto`}>
                 <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
                     <DialogPanel
                         transition
