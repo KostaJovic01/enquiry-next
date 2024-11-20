@@ -14,4 +14,5 @@ export type User = {
         "isSuperAdmin": boolean,
         "isPartner": boolean,
         "new": boolean
+        "languages"?: string[]
 }

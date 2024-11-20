@@ -13,6 +13,7 @@ import {useTranslation} from "react-i18next";
 import Button from "../common/Button";
 import showDiscardChangesDialog from "../common/DiscardModal";
 import DiscardModal from "../common/DiscardModal";
+import FormButton from "../FormButton";
 
 
 type Props = {
@@ -25,7 +26,10 @@ const UserForm = (props: Props) => {
         register,
         handleSubmit,
         formState,
-        reset
+        reset,
+        setValue,
+        getValues,
+        trigger
     } = useForm<UserSchemaData>({
         resolver: zodResolver(UserSchema),
     });
@@ -46,7 +50,20 @@ const UserForm = (props: Props) => {
         setIsConfirmationOpen(false)
         setIsModalOpen(false)
     }
-
+    const addLanguage = (language: string) => {
+        const currentLanguages = getValues("languages") || [];
+        
+        // Check if the language is already in the array
+        if (!currentLanguages.includes(language)) {
+            // Update the languages array
+            setValue("languages", [...currentLanguages, language], { shouldDirty: true }); // Mark as dirty
+        }
+        // Trigger validation and mark field as dirty
+        trigger("languages");
+        
+        // Log current languages for debugging
+        console.log(getValues("languages"));
+    };
     return (
         <div id="modal-root" >
             <RoundButton onClick={() => setIsModalOpen(true)}>
@@ -79,6 +96,11 @@ const UserForm = (props: Props) => {
                         name={"familyName"}
                         error={errors.familyName}
                     />
+                    <div className="flex flex-row space-x-2 justify-center">
+                        {["de", "en", "it", "ms"].map((lang) => (
+                            <Button key={lang} label={lang} onClick={() => addLanguage(lang)} />
+                        ))}
+                    </div>
                     <Dropdown
                         label={"Language"}
                         optionSelected={user.language}
