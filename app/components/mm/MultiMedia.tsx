@@ -2,11 +2,13 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-
-export default function MultiMedia() {
+type Props = {
+  currentEntryPoint?: string;
+}
+export default function MultiMedia(props:Props) {
+  const externalAppEntryPoint = props.currentEntryPoint? null : 'tutorial';
   const { slug } = useParams();
   const router = useRouter();
-
   // Normalize slug to always be an array
   const normalizedSlug = Array.isArray(slug) ? slug : slug ? [slug] : [];
 
@@ -24,7 +26,11 @@ export default function MultiMedia() {
       const { route } = event.data;
       if (route) {
         console.log(`External app is on route: ${route}`);
-        router.push(`/mm${route}`); // Update the Next.js route
+        if (!props.currentEntryPoint) {
+          router.push(`/mm${route}`);
+        } else {
+          router.push(`/${props.currentEntryPoint}${route}`); // Update the Next.js route
+        }
       }
     };
 
@@ -35,7 +41,19 @@ export default function MultiMedia() {
       // Clean up event listener when component unmounts
       window.removeEventListener('message', handleMessage);
     };
-  }, [router]);
+  }, [router, props.currentEntryPoint]);
+
+  useEffect(() => {
+    const objectElement = document.querySelector('object')
+    if (objectElement) {
+      objectElement.onload = () => {
+        const message = { entrypoint : externalAppEntryPoint }
+        const targetOrigin = 'http://localhost:42069'
+        if (!objectElement.contentWindow) return;
+        objectElement.contentWindow.postMessage(message, targetOrigin);
+      }
+    }
+  }, [externalAppEntryPoint]);
 
 
   /** 
@@ -53,10 +71,9 @@ export default function MultiMedia() {
 
 
   return (
-      <iframe
+      <object
         className="w-full h-full"
-        src={iframeSrc}
-        sandbox="allow-scripts allow-same-origin"
+        data={iframeSrc}
         style={{ border: 'none' }}
       />
   );
